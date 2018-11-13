@@ -13,7 +13,7 @@ This project lacked the automation needs I have to combine this solution for exa
 # Requirements
 This project has been build on linux raspbian on a Raspberry Pi Zero W.
 
-0) Upgrade and update all repositories
+0) Upgrade and update all repositories:
 
     $  sudo apt-get update
     $  sudo apt-get upgrade
@@ -21,13 +21,18 @@ This project has been build on linux raspbian on a Raspberry Pi Zero W.
 
 1) Firstly you need the MAC or MAX addresses of the valve's.
 
-Install the required tool and libraries to support BLE
+Install the required tool and libraries to support BLE:
     
     $  sudo apt install git bluetooth bluez
+    
 
-2) Identify the valve(s)
-
+2) Identify the valve(s):
+    
+    $  sudo apt install git bluetooth bluez
+    
+    
     $  sudo hcitool lescan
+    
 
 write down the mac address of the valve(s) eg 01:02:03:04:05:06
 
