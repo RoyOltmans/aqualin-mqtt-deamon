@@ -15,17 +15,17 @@ This project has been build on linux raspbian on a Raspberry Pi Zero W.
 
 0) Upgrade and update all repositories
 
-    $   sudo apt-get update
-    $   sudo apt-get upgrade
-    $   sudo apt-get dist-upgrade
+    $  sudo apt-get update
+    $  sudo apt-get upgrade
+    $  sudo apt-get dist-upgrade
 
 1) Firstly you need the MAC or MAX addresses of the valve's.
 
-Install the required tool:
+Install the required tool and libraries to support BLE
     
     $  sudo apt install git bluetooth bluez
 
-2) Identify the valve's:
+2) Identify the valve(s)
 
     $  sudo hcitool lescan
 
@@ -33,7 +33,7 @@ write down the mac address of the valve(s) eg 01:02:03:04:05:06
 
 3) A MQTT bus is needed install a MQTT bus (for example mosquitto) 
 
-    $   sudo apt-get install mosquitto mosquitto-clients python-mosquitto
+    $  sudo apt-get install mosquitto mosquitto-clients python-mosquitto
 
 Detailed description can be [found here](https://learn.adafruit.com/diy-esp8266-home-security-with-lua-and-mqtt/configuring-mqtt-on-the-raspberry-pi): 
 
