@@ -15,9 +15,9 @@ This project has been build on linux raspbian on a Raspberry Pi Zero W.
 
 0) Upgrade and update all repositories:
 
-    $  sudo apt-get update
-       sudo apt-get upgrade
-       sudo apt-get dist-upgrade
+    $  - sudo apt-get update
+       - sudo apt-get upgrade
+       - sudo apt-get dist-upgrade
 
 1) Firstly you need the MAC or MAX addresses of the valve's.
 
