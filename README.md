@@ -25,7 +25,9 @@ This project has been build on linux raspbian on a Raspberry Pi Zero W.
 
 Install the required tool and libraries to support BLE:
 ```
-    $  sudo apt install git bluetooth bluez
+    $  sudo apt-get install git bluetooth bluez
+       sudo apt-get install python
+       sudo apt-get install python-pip
 ``` 
 
 2) Identify the valve(s):
