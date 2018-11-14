@@ -63,8 +63,13 @@ Detailed description can be [found here](https://learn.adafruit.com/diy-esp8266-
        sudo pip install mercurial
 ```
 
-$  git clone https://github.com/RoyOltmans/aqualin.git /opt/aqualin
+6) Install aqualin mqtt deamon
+```
+    $  git clone https://github.com/RoyOltmans/aqualin-mqtt-deamon.git /opt/aqualin-mqtt-deamon
+```
 
+
+# Usage
 
 
 ```
