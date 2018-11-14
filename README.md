@@ -36,12 +36,17 @@ Install the required tool and libraries to support BLE:
 write down the mac address of the valve(s) eg 01:02:03:04:05:06
 
 3) A MQTT bus is needed install a MQTT bus (for example mosquitto) 
-
+```
     $  sudo apt-get install mosquitto mosquitto-clients python-mosquitto
+```
 
 Detailed description can be [found here](https://learn.adafruit.com/diy-esp8266-home-security-with-lua-and-mqtt/configuring-mqtt-on-the-raspberry-pi): 
 
+```
 mosquitto_sub -h [MQTT Host] -t '#' -v
+```
 
+```
 mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/on -m [payload, timer in minutes]
-mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/on -m 30
+mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/off -m [payload, timer in minutes]
+```
