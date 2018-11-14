@@ -94,4 +94,4 @@ To change the state of an aqualin device fill in the correct mac address (sranne
        mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/off -m [payload, timer in minutes]
 ```
 
-Hope this project helps with your garden automation. OFfcourse this could be combined with miflora to control the valves via home-automation.
+Hope this project helps with your garden automation. Offcourse this could be combined with miflora to control the valves via home-automation.
