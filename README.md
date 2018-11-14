@@ -14,6 +14,7 @@ This project lacked the automation needs I have to combine this solution for exa
 This project has been build on linux raspbian on a Raspberry Pi Zero W.
 
 0) Upgrade and update all repositories:
+
 ```bash
     $  sudo apt-get update
        sudo apt-get upgrade
