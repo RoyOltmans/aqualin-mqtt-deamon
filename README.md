@@ -85,13 +85,13 @@ Execute the script
 
 Start a new bash instance and follow MQTT publications, use the following command below to follow the MQTT output
 ```
-mosquitto_sub -h [MQTT Host] -t '#' -v
+    $  mosquitto_sub -h [MQTT Host] -t '#' -v
 ```
 
 To change the state of an aqualin device fill in the correct mac address (sranned with hcitool) and switch it on/of -m is the payload how long the valve will be openend before it closes again. The message for the off state does not have any functional affect.
 ```
-mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/on -m [payload, timer in minutes]
-mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/off -m [payload, timer in minutes]
+    $  mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/on -m [payload, timer in minutes]
+       mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/off -m [payload, timer in minutes]
 ```
 
 Hope this project helps with your garden automation. OFfcourse this could be combined with miflora to control the valves via home-automation.
