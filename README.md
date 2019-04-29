@@ -29,7 +29,7 @@ This project has been build on linux raspbian on a Raspberry Pi Zero W.
        sudo apt-get dist-upgrade
 ```
 
-1) Firstly you need the MAC address(es) of the valve's.
+1) Firstly install necessay utils
 
 Install the required tool and libraries to support BLE:
 ```
@@ -57,7 +57,7 @@ Detailed description can be [found here](https://learn.adafruit.com/diy-esp8266-
     $  git clone https://github.com/RoyOltmans/aqualin-mqtt-deamon.git /opt/aqualin-mqtt-deamon
 ```
 
-5) Identify the valve(s):
+5) We will need the MAC address(es) of the valve's, you can identify these by the following command:
 ```
     $  sudo hcitool lescan
 ``` 
@@ -76,7 +76,7 @@ Afterwards try connecting by using the following command:
 sudo gatttool -b [01:02:03:04:09:B6 exmaple max] -I
 ```
 
-afterwards you get into a prompt, execute the following:
+Afterwards you get into a prompt, execute the following command:
 
 ```
 char-desc
@@ -87,6 +87,8 @@ This should give a long list of ID's, if this works it should be "ok".
 6) Configure the config.ini
 
 Edit the config.ini via your favorite text editor (e.g. nano, vi etc)
+
+Change the mac address if you have one valve remove the whole line of mac addresses and the ','.
 
 # Usage
 
