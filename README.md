@@ -38,36 +38,55 @@ Install the required tool and libraries to support BLE:
        sudo apt-get install python-pip
 ``` 
 
-2) Identify the valve(s):
-```
-    $  sudo hcitool lescan
-``` 
-
-write down the mac address of the valve(s) eg 01:02:03:04:05:06
-
-3) Configure the config.ini
-
-Edit the config.ini via your favorite text editor (e.g. nano, vi etc)
-
-4) A MQTT bus is needed install a MQTT bus (for example mosquitto) 
+2) A MQTT bus is needed install a MQTT bus (for example mosquitto) 
 ```
     $  sudo apt-get install mosquitto mosquitto-clients python-mosquitto
 ```
 
 Detailed description can be [found here](https://learn.adafruit.com/diy-esp8266-home-security-with-lua-and-mqtt/configuring-mqtt-on-the-raspberry-pi): 
 
-5) Install necessary supporting libraries for the project
+3) Install necessary supporting libraries for the project
 ```
     $  sudo pip install paho-mqtt
        sudo pip install schedule
        sudo pip install mercurial
 ```
 
-6) Install aqualin mqtt deamon
+4) Install aqualin mqtt deamon
 ```
     $  git clone https://github.com/RoyOltmans/aqualin-mqtt-deamon.git /opt/aqualin-mqtt-deamon
 ```
 
+5) Identify the valve(s):
+```
+    $  sudo hcitool lescan
+``` 
+write down the mac address of the valve(s) eg 01:02:03:04:05:06
+
+Normally the address starts with 01:02:03:04:[XX]:[XX]
+
+A example line would be
+```
+01:02:03:04:09:B6 Spray-Mist 09B6
+```
+
+Afterwards try connecting by using the following command:
+
+```
+sudo gatttool -b [01:02:03:04:09:B6 exmaple max] -I
+```
+
+afterwards you get into a prompt, execute the following:
+
+```
+char-desc
+```
+
+This should give a long list of ID's, if this works it should be "ok".
+
+6) Configure the config.ini
+
+Edit the config.ini via your favorite text editor (e.g. nano, vi etc)
 
 # Usage
 
