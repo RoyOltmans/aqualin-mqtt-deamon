@@ -113,4 +113,22 @@ To change the state of an aqualin device fill in the correct mac address (sranne
        mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/off -m [payload, timer in minutes]
 ```
 
+After some late response I have added a requested feature and a repetitive check cycle for registered valve's.
+
+You can manually provoke the service for a check via the following commands:
+```
+    $  mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/valve -m 'state'
+       mosquitto_pub -h [MQTT Host] -t home/aqualin/[Aquilin BLE MAC]/status/valve -m 'timer'
+```
+
+The response will be via the following MQTT path with the Message payload below:
+```
+    home/aqualin/[Aquilin BLE MAC]/valvestate [state]
+    home/aqualin/[Aquilin BLE MAC]/valvetimer [timer duration]
+```
+
+The valve state will be reported for all valve every 5 minutes.
+
+This all van be optimized with more configuration items etc less hard coded (it's a quick and dirty project). I am thinking of porting the whole setup to a ESP in the future (keep you posted).
+
 Hope this project helps with your garden automation. Offcourse this could be combined with miflora to control the valves via home-automation.
