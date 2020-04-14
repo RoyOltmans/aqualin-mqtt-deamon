@@ -6,7 +6,7 @@
 #
 # Author:      roy.oltmans
 #
-# Created:     11-11-2018
+# Created:     14-04-2020
 # Copyright:   (c) roy.oltmans 2018
 # Licence:     <your licence>
 # ---------------------------------------------------------------------------------------
@@ -56,6 +56,12 @@ def on_message(client, userdata, msg):  # When a message is received on the MQTT
         elif 'off' in msg.topic.split("/"):
             status = 'off'
             timervalue = 00
+        elif 'valve' in msg.topic.split("/"):
+            if msg.payload == 'state':
+                status = 'state'
+            elif msg.payload == 'timer':
+                status = 'timer'
+            timervalue = stdwatertimer
         mqtt_Queue.put((status,timervalue,msg.topic.split("/")[2]))
         mqtt_Queue.qsize()
 
@@ -96,17 +102,61 @@ def setblerequest(status, devicemac, bleHandle, bleValue):
         time.sleep(5)
         setblerequest(status, devicemac, bleHandle, bleValue)
 
+def getsolenoidvalve(devicemac):
+    global deviceblelock
+    if trace:
+        print "Connecting " + devicemac + "..."    
+    if deviceblelock == False:
+        deviceblelock = True
+        device = btle.Peripheral(str(devicemac))
+        intvalvestate = int(str(binascii.b2a_hex(device.readCharacteristic(0x0073)).decode('utf-8'))[6:10],16)
+        time.sleep(int(waittime))
+        device.disconnect()
+        deviceblelock = False
+        return intvalvestate
+    else:
+        time.sleep(5)
 
-def runworkerbledevicestate():
+def runworkerbledevice():
     while True:
         queuevalues = mqtt_Queue.get()
+        devicemac = queuevalues[2]
         if trace:
             print queuevalues
-        setblerequest(queuevalues[0], queuevalues[2], bleHandle, getblevalue(queuevalues[0], queuevalues[1]))
-        # Initialize ble req
+        intsolenoidstate = getsolenoidvalve(devicemac)
+        if queuevalues[0] == 'state':
+            if intsolenoidstate <= 0:
+                strvalvestate = 'off'
+            else:
+                strvalvestate = 'on'
+            client.publish(mqttbasepath + str(devicemac) + '/valvestate', strvalvestate)  
+        elif queuevalues[0] == 'timer':
+            client.publish(mqttbasepath + str(devicemac) + '/valvetimer', str(intsolenoidstate))
+        else:
+            # Initialize ble req
+            setblerequest(queuevalues[0], devicemac, bleHandle, getblevalue(queuevalues[0], queuevalues[1]))
         if trace:
-            print "BLE instruction send..."
+            print "BLE instruction processed..."
 
+def runvalvecheck():
+    global deviceblelock
+    for i, devicemac in enumerate(devicemaclist):
+        if deviceblelock == False:
+            deviceblelock = True
+            device = btle.Peripheral(str(devicemac))
+            intsolenoidstate = getsolenoidvalve(devicemac)
+            if intsolenoidstate <= 0:
+                strvalvestate = 'off'
+            else:
+                strvalvestate = 'on'
+            client.publish(mqttbasepath + str(devicemac) + '/valvestate', strvalvestate)  # publish
+            if trace:
+                print "Valve state is " + strvalvestate + " for device " + str(devicemac)
+            time.sleep(int(waittime))
+            device.disconnect()
+            deviceblelock = False
+        else:
+            time.sleep(5)
 
 def runbatterycheck():
     global deviceblelock
@@ -129,16 +179,18 @@ def runworkerblebatterystats():
         schedule.run_pending()
         time.sleep(int(waittime))
 
-
 if __name__ == '__main__':
     # First thread creating Queue for state calls
-    t1 = Thread(target=runworkerbledevicestate)  # Start worker thread 1
+    t1 = Thread(target=runworkerbledevice)  # Start worker thread 1
     t1.setDaemon(True)
     t1.start()
 
     # Setting itteration check battery status every week on sunday and reporting on MQTT
     # schedule.every(10).seconds.do(runbatterycheck)  # for checking thread fullfillment
     schedule.every().sunday.at("23:55").do(runbatterycheck)
+
+    # Setting itteration check valve status every 5min and reporting on MQTT
+    schedule.every(300).seconds.do(runvalvecheck)  # for checking thread fullfillment
 
     # Second Thread Battery status checks all devices
     t2 = Thread(target=runworkerblebatterystats)  # Start worker thread 2 monthly
