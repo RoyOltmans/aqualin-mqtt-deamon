@@ -11,7 +11,7 @@
 # Licence:     <your licence>
 # ---------------------------------------------------------------------------------------
 from bluepy import btle
-from Queue import Queue
+import queue
 from threading import Thread
 import paho.mqtt.client as mqtt
 import main_utils, os, sys, syslog, time, schedule, binascii
