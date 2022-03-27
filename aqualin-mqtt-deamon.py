@@ -282,7 +282,7 @@ if __name__ == '__main__':
 
     # Setting itteration check battery status every week on sunday and reporting on MQTT
     # schedule.every(10).seconds.do(runbatterycheck)  # for checking thread fullfillment
-    schedule.every().sunday.at("23:55").do(runbatterycheck)
+    schedule.every(6).hours.do(runbatterycheck)
 
     # Setting itteration check valve status every 5min and reporting on MQTT
     schedule.every(300).seconds.do(runvalvecheck)  # for checking thread fullfillment
@@ -299,4 +299,6 @@ if __name__ == '__main__':
     if strmqttuser:
         client.username_pw_set(username=strmqttuser,password=strmqttpass)
     client.connect(strmqtthost, intmqttport, 60)
+    runbatterycheck()
+    runvalvecheck()
     client.loop_forever()
