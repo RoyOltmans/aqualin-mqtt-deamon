@@ -81,7 +81,10 @@ def on_message(client, userdata, msg):  # When a message is received on the MQTT
     printfunc()
 
     msg_payload = msg.payload.decode("utf-8")
+    tprint("on_message: msg.payload: "+ msg_payload)
+    status = 'unknown'
     if 'status' in msg.topic.split("/"):  # check if the req is applicable
+        tprint("Status was found")
         if 'on' in msg.topic.split("/"):  # check kind of request
             status = 'on'
             timervalue = int(msg_payload)
@@ -235,6 +238,10 @@ def runvalvecheck():
     for i, devicemac in enumerate(devicemaclist):
         if deviceblelock == False:
             intsolenoidstate = getsolenoidvalve(devicemac)
+            if intsolenoidstate is None:
+                tprint("Solenoid State is NoneType - something wrong?")
+                tprint(intsolenoidstate)
+                return
             if intsolenoidstate <= 0:
                 strvalvestate = 'off'
             else:
