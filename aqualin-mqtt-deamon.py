@@ -70,6 +70,8 @@ def on_connect(client, userdata, flags, rc):  # The callback for when the client
     syslog.syslog("MQTT: Connected with result code " + str(rc))
 
     tprint("MQTT: Connected with result code " + str(rc))
+    if rc == 5:
+        tprint("\t MQTT client is UNAUTHORIZED")
         # Subscribing in on_connect() means that if we lose the connection and
         # reconnect then subscriptions will be renewed.
     client.subscribe(mqttbasepath+'#')
