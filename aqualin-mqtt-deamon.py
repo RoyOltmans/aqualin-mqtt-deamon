@@ -27,6 +27,9 @@ devicemaclist = tools.fetchConfig().get('AQUALIN', 'macaddresslist')
 stdwatertimer = tools.fetchConfig().get('AQUALIN', 'stdwatertimer')
 strmqtthost = tools.fetchConfig().get('MQTT', 'Host')
 intmqttport = int(tools.fetchConfig().get('MQTT', 'Port'))
+strmqttclientid = tools.fetchConfig().get('MQTT', 'Clientid')
+strmqttuser = tools.fetchConfig().get('MQTT', 'User')
+strmqttpass = tools.fetchConfig().get('MQTT', 'Pass')
 mqttbasepath = tools.fetchConfig().get('MQTT', 'mqttbasepath')
 
 # Set up some global variables
@@ -213,8 +216,10 @@ if __name__ == '__main__':
     t2.start()
 
     # MQTT Startup
-    client = mqtt.Client()
+    client = mqtt.Client(strmqttclientid)
     client.on_connect = on_connect
     client.on_message = on_message
+    if strmqttuser:
+        client.username_pw_set(username=strmqttuser,password=strmqttpass)
     client.connect(strmqtthost, intmqttport, 60)
     client.loop_forever()
