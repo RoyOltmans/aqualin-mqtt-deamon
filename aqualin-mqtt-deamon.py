@@ -229,7 +229,7 @@ def runworkerblebatterystats():
 if __name__ == '__main__':
     # First thread creating Queue for state calls
     t1 = Thread(target=runworkerbledevice)  # Start worker thread 1
-    t1.setDaemon(True)
+    t1.daemon = True
     t1.start()
 
     # Setting itteration check battery status every week on sunday and reporting on MQTT
@@ -241,7 +241,7 @@ if __name__ == '__main__':
 
     # Second Thread Battery status checks all devices
     t2 = Thread(target=runworkerblebatterystats)  # Start worker thread 2 monthly
-    t2.setDaemon(True)
+    t2.daemon = True
     t2.start()
 
     # MQTT Startup
