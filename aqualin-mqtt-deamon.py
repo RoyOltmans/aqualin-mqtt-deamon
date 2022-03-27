@@ -57,11 +57,16 @@ def unlockble():
 
     deviceblelock = False
 
+def printfunc():
+    tprint(" "+ inspect.stack()[1].function +"()")
+
 def tprint( string ):
     if trace:
         print( string )
 
 def on_connect(client, userdata, flags, rc):  # The callback for when the client receives a response from the server.
+    printfunc()
+
     syslog.syslog("MQTT: Connected with result code " + str(rc))
 
     tprint("MQTT: Connected with result code " + str(rc))
@@ -71,6 +76,8 @@ def on_connect(client, userdata, flags, rc):  # The callback for when the client
 
 
 def on_message(client, userdata, msg):  # When a message is received on the MQTT bus
+    printfunc()
+
     msg_payload = msg.payload.decode("utf-8")
     if 'status' in msg.topic.split("/"):  # check if the req is applicable
         if 'on' in msg.topic.split("/"):  # check kind of request
@@ -92,6 +99,8 @@ def on_message(client, userdata, msg):  # When a message is received on the MQTT
         mqtt_Queue.qsize()
 
 def getblevalue(status, timer):  # transform and prepair the Value response on or off and time the vale will be active
+    printfunc()
+
     valuerequest = ''  # type: str
     valuestatus = '00'
     valuecalltimer = '0000'
@@ -114,6 +123,8 @@ def getblevalue(status, timer):  # transform and prepair the Value response on o
 
 
 def setblerequest(status, devicemac, bleHandle, bleValue):
+    printfunc()
+
     global deviceblelock
 
     tprint("Connecting " + devicemac + "...")
@@ -142,6 +153,8 @@ def setblerequest(status, devicemac, bleHandle, bleValue):
         setblerequest(status, devicemac, bleHandle, bleValue)
 
 def getsolenoidvalve(devicemac):
+    printfunc()
+
     global deviceblelock
 
     tprint("Connecting " + devicemac + "...")
@@ -186,6 +199,8 @@ def getsolenoidvalve(devicemac):
         time.sleep(5)
 
 def runworkerbledevice():
+    printfunc()
+
     while True:
         queuevalues = mqtt_Queue.get()
         devicemac = queuevalues[2]
@@ -211,6 +226,8 @@ def runworkerbledevice():
         tprint("BLE instruction processed...")
 
 def runvalvecheck():
+    printfunc()
+
     global deviceblelock
 
     for i, devicemac in enumerate(devicemaclist):
@@ -229,6 +246,8 @@ def runvalvecheck():
             time.sleep(5)
 
 def runbatterycheck():
+    printfunc()
+
     global deviceblelock
 
     for i, devicemac in enumerate(devicemaclist):
@@ -249,6 +268,8 @@ def runbatterycheck():
             time.sleep(5)
 
 def runworkerblebatterystats():
+    printfunc()
+
     while True:
         schedule.run_pending()
         time.sleep(int(waittime))
