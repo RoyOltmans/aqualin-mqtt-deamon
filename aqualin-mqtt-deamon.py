@@ -146,11 +146,25 @@ def getsolenoidvalve(devicemac):
 
     tprint("Connecting " + devicemac + "...")
 
+    if deviceblelock == True:
+        tprint("Locked, sleeping")
+        time.sleep(5)
+
     if deviceblelock == False:
         lockble()
 
-        device = btle.Peripheral(str(devicemac))
-            
+        try:
+            device = btle.Peripheral(str(devicemac))
+        except:
+            tprint(inspect.stack()[0][3] +"() - Connection failed - "+ devicemac)
+            return -1
+
+        try:
+            charateristic73 = device.readCharacteristic(0x0073)
+        except:
+            tprint(inspect.stack()[0][3] +"() - Reading failed - "+ devicemac)
+            return -1
+
         tprint("Characteristic 0x0073")
         tprint(charateristic73)
         tprint(binascii.b2a_hex(charateristic73))
@@ -201,9 +215,6 @@ def runvalvecheck():
 
     for i, devicemac in enumerate(devicemaclist):
         if deviceblelock == False:
-            lockble()
-
-            device = btle.Peripheral(str(devicemac))
             intsolenoidstate = getsolenoidvalve(devicemac)
             if intsolenoidstate <= 0:
                 strvalvestate = 'off'
@@ -214,9 +225,6 @@ def runvalvecheck():
             tprint("Valve state is " + strvalvestate + " for device " + str(devicemac))
 
             time.sleep(int(waittime))
-            device.disconnect()
-
-            unlockble()
         else:
             time.sleep(5)
 
