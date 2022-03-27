@@ -46,23 +46,25 @@ deviceblelock = False
 def lockble():
     global deviceblelock
 
-    if trace:
-        print(" "+ inspect.stack()[1].function +"() deviceblelock locking")
+    tprint(" "+ inspect.stack()[1].function +"() deviceblelock locking")
 
     deviceblelock = True
 
 def unlockble():
     global deviceblelock
 
-    if trace:
-        print(" "+ inspect.stack()[1].function +"() deviceblelock unlocking")
+    tprint(" "+ inspect.stack()[1].function +"() deviceblelock unlocking")
 
     deviceblelock = False
 
+def tprint( string ):
+    if trace:
+        print( string )
+
 def on_connect(client, userdata, flags, rc):  # The callback for when the client receives a response from the server.
     syslog.syslog("MQTT: Connected with result code " + str(rc))
-    if trace:
-        print("MQTT: Connected with result code " + str(rc))
+
+    tprint("MQTT: Connected with result code " + str(rc))
         # Subscribing in on_connect() means that if we lose the connection and
         # reconnect then subscriptions will be renewed.
     client.subscribe(mqttbasepath+'#')
@@ -80,6 +82,7 @@ def on_message(client, userdata, msg):  # When a message is received on the MQTT
             status = 'off'
             timervalue = 00
         elif 'valve' in msg.topic.split("/"):
+            tprint("on_message: Checking on the valve state")
             if msg_payload == 'state':
                 status = 'state'
             elif msg_payload == 'timer':
@@ -101,31 +104,35 @@ def getblevalue(status, timer):  # transform and prepair the Value response on o
     valuerequest += valuebase
     valuerequest += valuestatus
     valuerequest += valuecalltimer
-    if trace:
-        print("BLE instruction: ")
-        print(valuerequest)
+
+    tprint("BLE instruction: ")
+    tprint(valuerequest)
 
     #value_req_hex = hex(int("0x"+ valuerequest, 16))  # payload preperation to hex for writing to valve
-    print("Hex:"+ valuerequest)
+    tprint("Hex:"+ valuerequest)
     return valuerequest
 
 
 def setblerequest(status, devicemac, bleHandle, bleValue):
     global deviceblelock
-    if trace:
-        print("Connecting " + devicemac + "...")
+
+    tprint("Connecting " + devicemac + "...")
+
     if deviceblelock == False:
 
         lockble()
 
         device = btle.Peripheral(str(devicemac))
         value_req_hex = hex(int(bleValue, 16))  # payload preperation to hex for writing to valve
-        print("setblerequest- bleValue: "+ value_req_hex)
-        print("setblerequest- Bytes:")
-        print(bytes.fromhex(bleValue) )
+
+        tprint("setblerequest- bleValue: "+ value_req_hex)
+        tprint("setblerequest- Bytes:")
+        tprint(bytes.fromhex(bleValue) )
+
         device.writeCharacteristic(0x0073, bytes.fromhex(bleValue), withResponse=True)
-        if trace:
-            print("Wait " + str(waittime) + " seconds...")
+
+        tprint("Wait " + str(waittime) + " seconds...")
+
         time.sleep(int(waittime))
         device.disconnect()
 
@@ -136,21 +143,24 @@ def setblerequest(status, devicemac, bleHandle, bleValue):
 
 def getsolenoidvalve(devicemac):
     global deviceblelock
-    if trace:
-        print("Connecting " + devicemac + "...")
+
+    tprint("Connecting " + devicemac + "...")
+
     if deviceblelock == False:
         lockble()
 
         device = btle.Peripheral(str(devicemac))
-        if trace:
-            print("Characteristic 0x0073")
-            print(charateristic73)
-            print(binascii.b2a_hex(charateristic73))
-            print(binascii.b2a_hex(charateristic73).decode('utf-8'))
-            print(str(binascii.b2a_hex(charateristic73).decode('utf-8'))[6:10])
+            
+        tprint("Characteristic 0x0073")
+        tprint(charateristic73)
+        tprint(binascii.b2a_hex(charateristic73))
+        tprint(binascii.b2a_hex(charateristic73).decode('utf-8'))
+        tprint(str(binascii.b2a_hex(charateristic73).decode('utf-8'))[6:10])
+
         intvalvestate = int(str(binascii.b2a_hex(charateristic73).decode('utf-8'))[6:10],16)
-        if trace:
-            print( "intvalvestate: "+ str(intvalvestate))
+
+        tprint( "intvalvestate: "+ str(intvalvestate))
+
         time.sleep(int(waittime))
         device.disconnect()
 
@@ -158,31 +168,37 @@ def getsolenoidvalve(devicemac):
 
         return intvalvestate
     else:
+        tprint("Locked again, sleeping")
         time.sleep(5)
 
 def runworkerbledevice():
     while True:
         queuevalues = mqtt_Queue.get()
         devicemac = queuevalues[2]
-        if trace:
-            print(queuevalues)
+
+        tprint(queuevalues)
+
         intsolenoidstate = getsolenoidvalve(devicemac)
         if queuevalues[0] == 'state':
+            tprint("runworkerbledevice- state")
             if intsolenoidstate <= 0:
                 strvalvestate = 'off'
             else:
                 strvalvestate = 'on'
             client.publish(mqttbasepath + str(devicemac) + '/valvestate', strvalvestate)  
         elif queuevalues[0] == 'timer':
+            tprint("runworkerbledevice- timer")
             client.publish(mqttbasepath + str(devicemac) + '/valvetimer', str(intsolenoidstate))
         else:
+            tprint("runworkerbledevice- initialize")
             # Initialize ble req
             setblerequest(queuevalues[0], devicemac, bleHandle, getblevalue(queuevalues[0], queuevalues[1]))
-        if trace:
-            print("BLE instruction processed...")
+
+        tprint("BLE instruction processed...")
 
 def runvalvecheck():
     global deviceblelock
+
     for i, devicemac in enumerate(devicemaclist):
         if deviceblelock == False:
             lockble()
@@ -194,8 +210,9 @@ def runvalvecheck():
             else:
                 strvalvestate = 'on'
             client.publish(mqttbasepath + str(devicemac) + '/valvestate', strvalvestate)  # publish
-            if trace:
-                print("Valve state is " + strvalvestate + " for device " + str(devicemac))
+
+            tprint("Valve state is " + strvalvestate + " for device " + str(devicemac))
+
             time.sleep(int(waittime))
             device.disconnect()
 
@@ -205,6 +222,7 @@ def runvalvecheck():
 
 def runbatterycheck():
     global deviceblelock
+
     for i, devicemac in enumerate(devicemaclist):
         if deviceblelock == False:
             lockble()
@@ -212,8 +230,9 @@ def runbatterycheck():
             device = btle.Peripheral(str(devicemac))
             strbatstatus = str(binascii.b2a_hex(device.readCharacteristic(0x0081)).decode('utf-8'))
             client.publish(mqttbasepath + str(devicemac) + '/battery', strbatstatus)  # publish
-            if trace:
-                print("Battery status " + str(strbatstatus) + "% of device " + str(devicemac))
+
+            tprint("Battery status " + str(strbatstatus) + "% of device " + str(devicemac))
+
             time.sleep(int(waittime))
             device.disconnect()
 
