@@ -12,4 +12,8 @@ stdwatertimer: 30
 [MQTT]
 Host: [MQTTHOST]
 Port: 1883
+# optional:
+# Clientid: aqualin
+# User: <username> 
+# Pass: <password>
 mqttbasepath: home/aqualin/

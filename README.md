@@ -47,9 +47,7 @@ Detailed description can be [found here](https://learn.adafruit.com/diy-esp8266-
 
 3) Install necessary supporting libraries for the project
 ```
-    $  sudo pip install paho-mqtt
-       sudo pip install schedule
-       sudo pip install mercurial
+    $  sudo pip3 install -r requirements.txt
 ```
 
 4) Install aqualin mqtt deamon
